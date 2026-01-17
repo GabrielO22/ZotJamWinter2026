@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     private CircleCollider2D circleCollider;
     private Vector2 position;
 
-    private Boolean onGround = true;
+    private Boolean onGround = false;
 
     private float moveInput;
 

@@ -553,7 +553,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -564,7 +564,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!212 &1389279943
 SpriteRenderer:
   serializedVersion: 2
@@ -651,7 +651,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 667f4ddf820840b46b6fa078c8112a23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  jumpForce: 2
+  moveSpeed: 7
+  jumpForce: 12
 --- !u!58 &1389279946
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -714,17 +715,37 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents:
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1389279945}
+        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+        m_MethodName: OnJump
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: f30b6d3d-bb5f-4aff-a107-cf728cf0033c
     m_ActionName: 'Player/Jump[/Keyboard/space,/Keyboard/upArrow,/Keyboard/w]'
   - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: cc98170a-804e-4e13-b503-249f7e43e6ea
-    m_ActionName: 'Player/MoveLeft[/Keyboard/a,/Keyboard/leftArrow]'
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 45b19682-20f7-4bb1-86cb-34cebda51747
-    m_ActionName: 'Player/New action[/Keyboard/d,/Keyboard/rightArrow]'
+      m_Calls:
+      - m_Target: {fileID: 1389279945}
+        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+        m_MethodName: OnMove
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: cecf242b-19a9-4665-8773-3102b46108da
+    m_ActionName: 'Player/Move[/Keyboard/a,/Keyboard/d,/Keyboard/leftArrow,/Keyboard/rightArrow]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -827,6 +848,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 4838720}
   - {fileID: 1867729852}
-  - {fileID: 1389279944}
   - {fileID: 146986618}
+  - {fileID: 1389279944}
   - {fileID: 414814899}

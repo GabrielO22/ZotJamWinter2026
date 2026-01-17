@@ -1,0 +1,68 @@
+# ================================
+# Unity generated folders
+# ================================
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# ================================
+# Visual Studio / Rider / VSCode
+# ================================
+.vscode/
+.vs/
+.idea/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+
+# ================================
+# Unity meta backup files
+# ================================
+*.pidb.meta
+*.pdb.meta
+
+# ================================
+# OS junk
+# ================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ================================
+# Crash & build artifacts
+# ================================
+crashlytics-build.properties
+
+# ================================
+# JetBrains Rider
+# ================================
+.idea/
+
+# ================================
+# Optional: Addressables
+# ================================
+AddressableAssetsData/*/*.bin*
+
+# ================================
+# Optional: Streaming Assets cache
+# ================================
+Assets/StreamingAssets/*.manifest
+Assets/StreamingAssets/*.meta
+
+# ================================
+# Local build output
+# ===================

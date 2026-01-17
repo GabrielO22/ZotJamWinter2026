@@ -7,12 +7,14 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rigidBody;
 
     private bool onGround = false;
+    private bool gravityReversed = false;
 
     private Vector2 moveInput;
 
-    public float moveSpeed = 2f;
-    public float jumpForce = 2f;
-    public float blinkTime = 1f;
+    public float moveSpeed = 7f;
+    public float jumpForce = 12f;
+    public float blinkTime = 0.5f;
+    public float blinkCooldownTime = 2f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -24,6 +26,7 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         rigidBody.linearVelocity = new Vector2(moveInput.x * moveSpeed, rigidBody.linearVelocity.y);
+        // Debug.Log(gravityReversed);
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -44,18 +47,24 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnBlink(InputAction.CallbackContext context)
     {
-        rigidBody.linearVelocityY = rigidBody.linearVelocityY * -1;
+        if(!context.performed) return;
+
+        if (gravityReversed) return;
+                
         StartCoroutine(reverseGravity());
-        
     }
 
     IEnumerator reverseGravity()
     {
+        gravityReversed = true;
+        rigidBody.linearVelocityY *= -1;
         rigidBody.gravityScale *= -1;
-        Debug.Log("Flip 1");
-        yield return new WaitForSeconds(blinkTime);
+        yield return new WaitForSecondsRealtime(blinkTime);
         rigidBody.gravityScale *= -1;
-        Debug.Log("Flip 2");
+        Debug.Log("1");
+        yield return new WaitForSecondsRealtime(blinkCooldownTime);
+        gravityReversed = false;
+        Debug.Log("2");
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

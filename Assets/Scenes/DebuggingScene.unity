@@ -269,10 +269,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f42344097f4a4f4d9a875bbc92b9e0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
-  camera: {fileID: 1389279944}
-  CameraSpeed: 5
-  FixedX: 0
-  OffsetZ: -10
+  player: {fileID: 1389279944}
+  cameraSpeed: 2
+  fixedX: 0
+  offsetZ: -10
 --- !u!1 &146986616
 GameObject:
   m_ObjectHideFlags: 0
@@ -508,7 +508,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 0.052740842, b: 0.050943315, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

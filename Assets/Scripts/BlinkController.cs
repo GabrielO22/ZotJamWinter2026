@@ -13,6 +13,8 @@ public class BlinkController : MonoBehaviour
     public float blinkTime;
     public float blinkCooldown;
     public ManaController manaController;
+    public GameObject normalplatform;
+    public GameObject evilplatform;
 
     public event Action enterBlink;
     public event Action exitBlink;

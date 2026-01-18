@@ -25,18 +25,9 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Blink",
+                    "name": "blink",
                     "type": "Button",
-                    "id": "25e03097-5874-4d7e-956a-55830a13047e",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "CoffeePowerUp",
-                    "type": "Button",
-                    "id": "b0ae3e9d-a1c6-419b-a9cf-ebe6a51de605",
+                    "id": "f6a33668-0a53-4848-8bd2-4951bda46e94",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -189,23 +180,68 @@
                 },
                 {
                     "name": "",
-                    "id": "4930a23a-97fa-4fb8-8003-cbcdf6ce02aa",
-                    "path": "<Keyboard>/e",
+                    "id": "e6fb8c90-26d5-4975-abc4-85a76e09f86e",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "blink",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "BlinkController",
+            "id": "679b7c83-bfcc-490f-8da0-1842785974d4",
+            "actions": [
+                {
+                    "name": "Blink",
+                    "type": "Button",
+                    "id": "3cf971c6-8361-42b8-a169-5478d4df4819",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "a0f76e02-65c1-4f23-986f-25927be44fe6",
+                    "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Blink",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
+                }
+            ]
+        },
+        {
+            "name": "UI",
+            "id": "7b65e43a-3f8f-4ec7-9471-1569473512d1",
+            "actions": [
+                {
+                    "name": "Pause",
+                    "type": "Button",
+                    "id": "6bfa5cf7-0711-429b-ac96-e92b116f2ab9",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
                 {
                     "name": "",
-                    "id": "34686179-e391-437e-9d52-8bfa90121840",
-                    "path": "<Keyboard>/q",
+                    "id": "c432d969-1892-4870-b673-9b46cbd9bfb9",
+                    "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "CoffeePowerUp",
+                    "action": "Pause",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

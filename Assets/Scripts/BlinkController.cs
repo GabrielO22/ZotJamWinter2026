@@ -1,20 +1,33 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
+using System;
 
 
 public class BlinkController : MonoBehaviour
 {
-    private bool canBlink = true;
+    public bool canBlink = true;
+    public bool isBlinking = false;
     public GameObject player;
     private Rigidbody2D playerRigidBody;
     public float blinkTime;
     public float blinkCooldown;
+    public ManaController manaController;
+
+    public event Action enterBlink;
+    public event Action exitBlink;
+
+    public static BlinkController Instance { get; private set; }
 
     void Awake()
     {
         playerRigidBody = player.GetComponent<Rigidbody2D>();
+        if (manaController == null)
+        {
+            manaController = player.GetComponent<ManaController>();
+        }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     public void OnBlink(InputAction.CallbackContext context)
@@ -24,26 +37,33 @@ public class BlinkController : MonoBehaviour
         if (!canBlink) return;
 
 
-        StartCoroutine(reverseGravity());
+        StartCoroutine(blinkRoutine());
+        
     }
 
-    IEnumerator reverseGravity()
+    IEnumerator blinkRoutine()
     {
+        if (manaController != null)
+        {
+            manaController.refill();
+        }
+
         canBlink = false;
-        playerRigidBody.gravityScale = -1;
+        enterBlink?.Invoke();
+        playerRigidBody.gravityScale *= -1;
         yield return new WaitForSecondsRealtime(blinkTime);
-        playerRigidBody.gravityScale = -1;
+        playerRigidBody.gravityScale *= -1;
+        exitBlink?.Invoke();
         yield return new WaitForSecondsRealtime(blinkCooldown);
         canBlink = true;
-
-
+        
     }
 
     public void forceBlink()
     {
         if (canBlink)
         {
-            StartCoroutine(reverseGravity());
+            StartCoroutine(blinkRoutine());
         }
     }
 }

@@ -1,50 +1,59 @@
+using System.Collections;
 using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
     public Transform player;
     public float EnemySpeed = 1f;
-    private bool isChasing = false;
+    public bool isChasing = false;
 
-    // Update is called once per frame
+    private BlinkController blink;
 
-    void OnEnable()
+    private void OnEnable()
     {
-        if (WorldState.Instance != null)
+        StartCoroutine(HookBlinkEvents());
+    }
+
+    private IEnumerator HookBlinkEvents()
+    {
+        // wait until BlinkController.Instance exists
+        while (BlinkController.Instance == null)
+            yield return null;
+
+        blink = BlinkController.Instance;
+
+        blink.enterBlink += StartChasing;
+        blink.exitBlink += StopChasing;
+
+        Debug.Log($"Enemy subscribed to BlinkController on {blink.gameObject.name}");
+    }
+
+    private void OnDisable()
+    {
+        if (blink != null)
         {
-            WorldState.Instance.enterBlink += startChasing;
-            WorldState.Instance.exitBlink += stopChasing;
+            blink.enterBlink -= StartChasing;
+            blink.exitBlink -= StopChasing;
         }
     }
 
-    void OnDisable()
-    {
-        if (WorldState.Instance != null)
-        {
-            WorldState.Instance.enterBlink -= startChasing;
-            WorldState.Instance.exitBlink -= stopChasing;
-        }
-    }
-
-    void startChasing()
-    {
-        isChasing = true;
-    }
-
-    void stopChasing()
-    {
-        isChasing = false;
-    }
     void Update()
     {
-        if (!isChasing) return;
-        Vector3 direction = player.position - transform.position;   // get directino to player
-        direction.Normalize();
+        if (!isChasing || player == null) return;
+
+        Vector3 direction = (player.position - transform.position).normalized;
         transform.position += direction * EnemySpeed * Time.deltaTime;
     }
 
-    public bool chasingState()
+    private void StartChasing()
     {
-        return isChasing;
+        isChasing = true;
+        Debug.Log("Enemy: start chasing");
+    }
+
+    private void StopChasing()
+    {
+        isChasing = false;
+        Debug.Log("Enemy: stop chasing");
     }
 }

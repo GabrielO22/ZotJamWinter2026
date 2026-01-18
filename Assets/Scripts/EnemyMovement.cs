@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
@@ -9,6 +10,16 @@ public class EnemyMovement : MonoBehaviour
     private SpriteChanger spriteChanger;
 
     private BlinkController blink;
+
+    public float patrolSpeed = 1f;
+    public Transform edgeCheck;
+    public Transform wallCheck;
+    private int dir = -1;
+    public float edgeRayLength = 0.4f;
+    public float wallRayLength = 0.2f;
+    public LayerMask groundLayer;
+
+
 
     private void Awake()
     {
@@ -21,7 +32,7 @@ public class EnemyMovement : MonoBehaviour
 
     private IEnumerator HookBlinkEvents()
     {
-        // wait until BlinkController.Instance exists
+        // wait until BlinkController.Istance exists
         while (BlinkController.Instance == null)
             yield return null;
 
@@ -51,22 +62,70 @@ public class EnemyMovement : MonoBehaviour
 
     void Update()
     {
-        if (!isChasing || player == null) return;
+        if (player == null) return;
 
-        Vector3 direction = (player.position - transform.position).normalized;
-        transform.position += direction * EnemySpeed * Time.deltaTime;
+        if (!isChasing)
+        {
+            IdleMovement();
+        }
+        else
+        {
+            Vector3 direction = (player.position - transform.position).normalized;
+            transform.position += direction * EnemySpeed * Time.deltaTime;
+        }
+        
     }
 
     private void StartChasing()
     {
         isChasing = true;
-        Debug.Log("Enemy: start chasing");
     }
 
     private void StopChasing()
     {
         isChasing = false;
-        Debug.Log("Enemy: stop chasing");
+    }
+    private void IdleMovement()
+    {
+        // Move in current patrol direction
+        transform.position += Vector3.right * dir * patrolSpeed * Time.deltaTime;
+
+        // Raycast down to check for ground ahead
+        RaycastHit2D edgeHit = Physics2D.Raycast(edgeCheck.position, Vector2.down, edgeRayLength);
+
+        bool groundAhead = edgeHit.collider != null && edgeHit.collider.CompareTag("Floor");
+
+        // Raycast forward to check for wall
+        RaycastHit2D wallHit = Physics2D.Raycast(wallCheck.position, Vector2.right * dir, wallRayLength);
+
+        bool wallAhead = wallHit.collider != null && wallHit.collider.CompareTag("Floor");
+
+        // Turn around if at edge or hitting wall
+        if (!groundAhead || wallAhead)
+            TurnAround();
+    }
+
+
+    private void TurnAround()
+    {
+        Debug.Log("SPIN");
+        dir *= -1;
+
+        // Optional: flip sprite
+        Vector3 s = transform.localScale;
+        s.x = Mathf.Abs(s.x) * dir;
+        transform.localScale = s;
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Debug.Log(edgeCheck);
+        Debug.Log(wallCheck);
+        if (edgeCheck != null)
+            Gizmos.DrawLine(edgeCheck.position, edgeCheck.position + Vector3.down * edgeRayLength);
+
+        if (wallCheck != null)
+            Gizmos.DrawLine(wallCheck.position, wallCheck.position + Vector3.right * dir * wallRayLength);
     }
 
 }

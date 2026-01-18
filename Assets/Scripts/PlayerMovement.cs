@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,8 +12,9 @@ public class PlayerMovement : MonoBehaviour
 
     public float moveSpeed = 7f;
     public float jumpForce = 12f;
-    public float blinkTime = 0.5f;
-    public float blinkCooldownTime = 2f;
+
+    private BlinkController blink;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -56,5 +58,35 @@ public class PlayerMovement : MonoBehaviour
         {
             onGround = false;
         }
+    }
+
+    public void FlipCharacter()
+    {
+        this.transform.rotation = new Quaternion(180, 0, 0, 0);
+    }
+
+    public void ResetCharacter()
+    {
+        this.transform.rotation = new Quaternion(0, 0, 0, 0);
+    }
+
+    private void OnEnable()
+    {
+        StartCoroutine(CharacterBlinkRoutine());
+    }
+
+    private IEnumerator CharacterBlinkRoutine()
+    {
+        while (BlinkController.Instance == null)
+            yield return null;
+        blink = BlinkController.Instance;
+        blink.enterBlink += FlipCharacter;
+        blink.exitBlink += ResetCharacter;
+    }
+
+    private void OnDisable()
+    {
+        blink.enterBlink -= FlipCharacter;
+        blink.exitBlink -= ResetCharacter;
     }
 }

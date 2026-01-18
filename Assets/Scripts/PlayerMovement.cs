@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform groundCheck;
     public float groundCheckRadius = 0.15f;
     public string floorTag = "Floor";
+    public string enemyTag = "Enemy";
     public bool onGround;
 
     private BlinkController blink;
@@ -64,7 +65,7 @@ public class PlayerMovement : MonoBehaviour
         if (groundCheck == null) return false;
 
         Collider2D hit = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius);
-        return hit != null && hit.CompareTag(floorTag);
+        return hit != null && (hit.CompareTag(floorTag) || hit.CompareTag(enemyTag));
     }
 
     // Visualize ground check circle

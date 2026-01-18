@@ -7,7 +7,7 @@ public class CameraFollow : MonoBehaviour
     public Transform player;        // target is player
     public float cameraSpeed = 2f;
     public float fixedX;            // x position should not change
-    public float offsetY = 2f;
+    public float offsetY = -2f;
     public float offsetZ = -10f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

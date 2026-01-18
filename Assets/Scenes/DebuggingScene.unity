@@ -287,6 +287,8 @@ GameObject:
   m_Component:
   - component: {fileID: 69378055}
   - component: {fileID: 69378054}
+  - component: {fileID: 69378057}
+  - component: {fileID: 69378056}
   m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
@@ -368,6 +370,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 566362431}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &69378056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 69378053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c09a45cfb806e842a639d5e62ccbcea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteChanger
+  newSprite: {fileID: 786222759682707614, guid: 3e00ea105db34644db870aeefc12d2cf, type: 3}
+--- !u!114 &69378057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 69378053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41a9b1c707f1794468b60ed3b89b1489, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BackgroundBlink
 --- !u!1 &100349727
 GameObject:
   m_ObjectHideFlags: 0
@@ -791,6 +818,8 @@ GameObject:
   m_Component:
   - component: {fileID: 208359611}
   - component: {fileID: 208359612}
+  - component: {fileID: 208359614}
+  - component: {fileID: 208359613}
   m_Layer: 0
   m_Name: Background (3)
   m_TagString: Untagged
@@ -872,6 +901,31 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &208359613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 208359610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41a9b1c707f1794468b60ed3b89b1489, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BackgroundBlink
+--- !u!114 &208359614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 208359610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c09a45cfb806e842a639d5e62ccbcea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteChanger
+  newSprite: {fileID: 786222759682707614, guid: 3e00ea105db34644db870aeefc12d2cf, type: 3}
 --- !u!1 &210108992
 GameObject:
   m_ObjectHideFlags: 0
@@ -1158,7 +1212,6 @@ MonoBehaviour:
   wallRayLength: 1
   turnCooldown: 0.2
   floorTag: Floor
-  playerTag: Player
 --- !u!4 &414814899
 Transform:
   m_ObjectHideFlags: 0
@@ -1331,6 +1384,8 @@ GameObject:
   m_Component:
   - component: {fileID: 426350656}
   - component: {fileID: 426350657}
+  - component: {fileID: 426350659}
+  - component: {fileID: 426350658}
   m_Layer: 0
   m_Name: Background (4)
   m_TagString: Untagged
@@ -1412,6 +1467,31 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &426350658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 426350655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41a9b1c707f1794468b60ed3b89b1489, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BackgroundBlink
+--- !u!114 &426350659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 426350655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c09a45cfb806e842a639d5e62ccbcea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteChanger
+  newSprite: {fileID: 786222759682707614, guid: 3e00ea105db34644db870aeefc12d2cf, type: 3}
 --- !u!1 &501377535
 GameObject:
   m_ObjectHideFlags: 0
@@ -1832,6 +1912,8 @@ MonoBehaviour:
   blinkTime: 1
   blinkCooldown: 2
   manaController: {fileID: 1006775494}
+  normalplatform: {fileID: 0}
+  evilplatform: {fileID: 0}
 --- !u!4 &813331323
 Transform:
   m_ObjectHideFlags: 0
@@ -2902,6 +2984,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1532578606}
   - component: {fileID: 1532578607}
+  - component: {fileID: 1532578609}
+  - component: {fileID: 1532578608}
   m_Layer: 0
   m_Name: Background (2)
   m_TagString: Untagged
@@ -2983,6 +3067,31 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &1532578608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1532578605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c09a45cfb806e842a639d5e62ccbcea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteChanger
+  newSprite: {fileID: 786222759682707614, guid: 3e00ea105db34644db870aeefc12d2cf, type: 3}
+--- !u!114 &1532578609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1532578605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41a9b1c707f1794468b60ed3b89b1489, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BackgroundBlink
 --- !u!1 &1625680426
 GameObject:
   m_ObjectHideFlags: 0
@@ -3410,6 +3519,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1780705930}
   - component: {fileID: 1780705931}
+  - component: {fileID: 1780705933}
+  - component: {fileID: 1780705932}
   m_Layer: 0
   m_Name: Background (1)
   m_TagString: Untagged
@@ -3491,6 +3602,31 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &1780705932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1780705929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41a9b1c707f1794468b60ed3b89b1489, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BackgroundBlink
+--- !u!114 &1780705933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1780705929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c09a45cfb806e842a639d5e62ccbcea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteChanger
+  newSprite: {fileID: 786222759682707614, guid: 3e00ea105db34644db870aeefc12d2cf, type: 3}
 --- !u!1 &1937479089
 GameObject:
   m_ObjectHideFlags: 0

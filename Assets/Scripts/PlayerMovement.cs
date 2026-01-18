@@ -4,28 +4,48 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private Rigidbody2D rigidBody;
-
-    public bool onGround = false;
+    private Rigidbody2D rb;
 
     private Vector2 moveInput;
+    private bool jumpQueued;
 
+    [Header("Movement")]
     public float moveSpeed = 7f;
     public float jumpForce = 12f;
 
+    [Header("Ground Check")]
+    public Transform groundCheck;
+    public float groundCheckRadius = 0.15f;
+    public string floorTag = "Floor";
+    public bool onGround;
+
     private BlinkController blink;
 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        rigidBody = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
-
-    private void FixedUpdate()
+    void FixedUpdate()
     {
-        rigidBody.linearVelocity = new Vector2(moveInput.x * moveSpeed, rigidBody.linearVelocity.y);
+        // 1) Update grounded state every physics step (stable)
+        onGround = IsGrounded();
+
+        // 2) Horizontal movement
+        rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
+
+        // 3) Jump (use queued input so it doesn't miss)
+        if (jumpQueued && onGround)
+        {
+            jumpQueued = false;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        }
+        else
+        {
+            // clear the queue if we can't use it soon (optional)
+            jumpQueued = false;
+        }
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -36,41 +56,36 @@ public class PlayerMovement : MonoBehaviour
     public void OnJump(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
-
-        if (onGround)
-        {
-            rigidBody.linearVelocity = new Vector2(rigidBody.linearVelocity.x, 0f);
-            rigidBody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-        }
+        jumpQueued = true; // queue it; FixedUpdate will apply if grounded
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private bool IsGrounded()
     {
-        if (collision.gameObject.CompareTag("Floor"))
-        {
-            onGround = true;
-        }
+        if (groundCheck == null) return false;
+
+        Collider2D hit = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius);
+        return hit != null && hit.CompareTag(floorTag);
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    // Visualize ground check circle
+    void OnDrawGizmosSelected()
     {
-        if (collision.gameObject.CompareTag("Floor"))
-        {
-            onGround = false;
-        }
+        if (groundCheck == null) return;
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
 
+    // Blink visual flip: do NOT use quaternion raw values
     public void FlipCharacter()
     {
-        this.transform.rotation = new Quaternion(180, 0, 0, 0);
+        transform.eulerAngles = new Vector3(180f, 0f, 0f);
     }
 
     public void ResetCharacter()
     {
-        this.transform.rotation = new Quaternion(0, 0, 0, 0);
+        transform.eulerAngles = Vector3.zero;
     }
 
-    private void OnEnable()
+    void OnEnable()
     {
         StartCoroutine(CharacterBlinkRoutine());
     }
@@ -79,14 +94,18 @@ public class PlayerMovement : MonoBehaviour
     {
         while (BlinkController.Instance == null)
             yield return null;
+
         blink = BlinkController.Instance;
         blink.enterBlink += FlipCharacter;
         blink.exitBlink += ResetCharacter;
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
-        blink.enterBlink -= FlipCharacter;
-        blink.exitBlink -= ResetCharacter;
+        if (blink != null)
+        {
+            blink.enterBlink -= FlipCharacter;
+            blink.exitBlink -= ResetCharacter;
+        }
     }
 }

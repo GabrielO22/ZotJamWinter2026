@@ -6,9 +6,14 @@ public class EnemyMovement : MonoBehaviour
     public Transform player;
     public float EnemySpeed = 1f;
     public bool isChasing = false;
+    private SpriteChanger spriteChanger;
 
     private BlinkController blink;
 
+    private void Awake()
+    {
+        spriteChanger = GetComponent<SpriteChanger>();
+    }
     private void OnEnable()
     {
         StartCoroutine(HookBlinkEvents());
@@ -21,9 +26,13 @@ public class EnemyMovement : MonoBehaviour
             yield return null;
 
         blink = BlinkController.Instance;
-
         blink.enterBlink += StartChasing;
+        blink.enterBlink += spriteChanger.changeSprite;
+        // change to evil sprite
+
         blink.exitBlink += StopChasing;
+        blink.exitBlink += spriteChanger.revertSprite;
+        // revert back to npc sprite
 
         Debug.Log($"Enemy subscribed to BlinkController on {blink.gameObject.name}");
     }
@@ -33,7 +42,10 @@ public class EnemyMovement : MonoBehaviour
         if (blink != null)
         {
             blink.enterBlink -= StartChasing;
+            blink.enterBlink -= spriteChanger.changeSprite;
+
             blink.exitBlink -= StopChasing;
+            blink.exitBlink -= spriteChanger.revertSprite;
         }
     }
 
@@ -56,4 +68,5 @@ public class EnemyMovement : MonoBehaviour
         isChasing = false;
         Debug.Log("Enemy: stop chasing");
     }
+
 }

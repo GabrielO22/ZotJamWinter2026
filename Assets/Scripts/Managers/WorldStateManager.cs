@@ -348,6 +348,18 @@ public class WorldStateManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Update the cached camera position when the camera moves to a new room
+    /// This ensures screen shake is relative to the current room's camera position
+    /// </summary>
+    public void UpdateCameraPosition()
+    {
+        if (mainCamera != null)
+        {
+            cameraOriginalPosition = mainCamera.transform.localPosition;
+        }
+    }
+
+    /// <summary>
     /// Get layer mask for current active solids
     /// </summary>
     public LayerMask GetActiveSolidLayer()

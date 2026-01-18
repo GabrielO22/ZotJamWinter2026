@@ -85,6 +85,13 @@ public class CameraController : MonoBehaviour
             }
 
             isTransitioning = false;
+
+            // Update WorldStateManager's cached camera position for blink shake effects
+            if (WorldStateManager.Instance != null)
+            {
+                WorldStateManager.Instance.UpdateCameraPosition();
+            }
+
             Debug.Log("Room transition complete");
         }
     }
@@ -114,6 +121,12 @@ public class CameraController : MonoBehaviour
         if (cam != null && cam.orthographic)
         {
             cam.orthographicSize = orthographicSize;
+        }
+
+        // Update WorldStateManager's cached camera position for blink shake effects
+        if (WorldStateManager.Instance != null)
+        {
+            WorldStateManager.Instance.UpdateCameraPosition();
         }
 
         Debug.Log($"Camera snapped to {position}");

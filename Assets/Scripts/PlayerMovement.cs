@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,7 +6,6 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rigidBody;
 
     private bool onGround = false;
-    private bool gravityReversed = false;
 
     private Vector2 moveInput;
 
@@ -26,7 +24,6 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         rigidBody.linearVelocity = new Vector2(moveInput.x * moveSpeed, rigidBody.linearVelocity.y);
-        // Debug.Log(gravityReversed);
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -45,31 +42,9 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void OnBlink(InputAction.CallbackContext context)
-    {
-        if(!context.performed) return;
-
-        if (gravityReversed) return;
-                
-        StartCoroutine(reverseGravity());
-    }
-
-    IEnumerator reverseGravity()
-    {
-        gravityReversed = true;
-        rigidBody.linearVelocityY *= -1;
-        rigidBody.gravityScale *= -1;
-        yield return new WaitForSecondsRealtime(blinkTime);
-        rigidBody.gravityScale *= -1;
-        Debug.Log("1");
-        yield return new WaitForSecondsRealtime(blinkCooldownTime);
-        gravityReversed = false;
-        Debug.Log("2");
-    }
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        if (collision.gameObject.CompareTag("Floor"))
         {
             onGround = true;
         }
@@ -77,7 +52,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        if (collision.gameObject.CompareTag("Floor"))
         {
             onGround = false;
         }

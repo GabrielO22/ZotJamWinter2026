@@ -7,6 +7,7 @@ public class CameraFollow : MonoBehaviour
     public Transform player;        // target is player
     public float cameraSpeed = 2f;
     public float fixedX;            // x position should not change
+    public float offsetY = 2f;
     public float offsetZ = -10f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -20,7 +21,7 @@ public class CameraFollow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float newY = player.position.y;
+        float newY = player.position.y + offsetY;
 
         Vector3 CameraPosition = new Vector3(fixedX, newY,  offsetZ);
 

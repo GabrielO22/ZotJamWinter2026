@@ -5,7 +5,8 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rigidBody;
-    private InputSystem_Actions inputActions;
+    private PlayerControls inputActions;
+    private SpriteRenderer spriteRenderer;
 
     private bool onGround = false;
     private Vector2 moveInput;
@@ -16,21 +17,26 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce = 2f;
     public LayerMask groundLayers; // Set in Inspector to include all ground types
 
+    [Header("Visual Settings")]
+    public bool flipSpriteOnDirection = true;
+
     [Header("Debug")]
     public bool showGroundDebug = false;
 
     void Awake()
     {
         rigidBody = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         // Initialize Input Actions
-        inputActions = new InputSystem_Actions();
+        inputActions = new PlayerControls();
 
         // Subscribe to input events
         inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Move.canceled += OnMove;
         inputActions.Player.Jump.performed += OnJump;
         inputActions.Player.Blink.performed += OnBlink;
+        inputActions.Player.CoffeePowerUp.performed += OnCoffeePowerUp;
     }
 
     void OnEnable()
@@ -66,12 +72,26 @@ public class PlayerMovement : MonoBehaviour
             inputActions.Player.Move.canceled -= OnMove;
             inputActions.Player.Jump.performed -= OnJump;
             inputActions.Player.Blink.performed -= OnBlink;
+            inputActions.Player.CoffeePowerUp.performed -= OnCoffeePowerUp;
         }
     }
 
     private void FixedUpdate()
     {
         rigidBody.linearVelocity = new Vector2(moveInput.x * moveSpeed, rigidBody.linearVelocity.y);
+
+        // Update sprite flipping based on movement direction
+        if (flipSpriteOnDirection && spriteRenderer != null && Mathf.Abs(moveInput.x) > 0.01f)
+        {
+            if (moveInput.x < 0)
+            {
+                spriteRenderer.flipX = true;
+            }
+            else if (moveInput.x > 0)
+            {
+                spriteRenderer.flipX = false;
+            }
+        }
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -119,6 +139,28 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             Debug.LogWarning("WorldStateManager not found! Cannot blink.");
+        }
+    }
+
+    public void OnCoffeePowerUp(InputAction.CallbackContext context)
+    {
+        // Activate coffee power-up for extended blink without enemy chase
+        if (WorldStateManager.Instance != null)
+        {
+            bool success = WorldStateManager.Instance.ActivateCoffeePowerUp();
+            if (success)
+            {
+                // Reverse Y velocity when entering blink (if not already blinking)
+                if (!WorldStateManager.Instance.IsBlinking)
+                {
+                    rigidBody.linearVelocity = new Vector2(rigidBody.linearVelocity.x, rigidBody.linearVelocity.y * -1);
+                }
+                Debug.Log("Coffee power-up activated!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("WorldStateManager not found! Cannot activate coffee power-up.");
         }
     }
 

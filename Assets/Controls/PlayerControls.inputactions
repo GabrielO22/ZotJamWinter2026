@@ -32,6 +32,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "CoffeePowerUp",
+                    "type": "Button",
+                    "id": "b0ae3e9d-a1c6-419b-a9cf-ebe6a51de605",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -181,11 +190,22 @@
                 {
                     "name": "",
                     "id": "4930a23a-97fa-4fb8-8003-cbcdf6ce02aa",
-                    "path": "<Keyboard>/enter",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Blink",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "34686179-e391-437e-9d52-8bfa90121840",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CoffeePowerUp",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

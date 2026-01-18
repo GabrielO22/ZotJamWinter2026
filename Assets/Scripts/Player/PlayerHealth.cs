@@ -17,10 +17,13 @@ public class PlayerHealth : MonoBehaviour
 
     // Events
     public event Action OnPlayerDeath;
+    public event Action OnHealthChanged; // For UI updates
 
     // Properties
     public bool IsAlive => currentHealth > 0;
     public bool IsInvincible => invincibilityTimer > 0f;
+    public int CurrentHealth => currentHealth;
+    public int MaxHealth => maxHealth;
 
     void Update()
     {
@@ -40,6 +43,8 @@ public class PlayerHealth : MonoBehaviour
 
         currentHealth -= damage;
         Debug.Log($"Player took {damage} damage. Health: {currentHealth}/{maxHealth}");
+
+        OnHealthChanged?.Invoke(); // Notify UI of health change
 
         if (currentHealth <= 0)
         {
@@ -72,6 +77,8 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
         invincibilityTimer = 0f;
         Debug.Log("Player respawned");
+
+        OnHealthChanged?.Invoke(); // Notify UI of health restored
     }
 
     /// <summary>
@@ -81,5 +88,7 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         Debug.Log($"Player healed {amount}. Health: {currentHealth}/{maxHealth}");
+
+        OnHealthChanged?.Invoke(); // Notify UI of health increase
     }
 }

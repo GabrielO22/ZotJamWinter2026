@@ -19,7 +19,13 @@ public class WorldStateManager : MonoBehaviour
 
     [Header("Statistics")]
     [SerializeField] private int blinkCount = 0;
-    [SerializeField] private int coffeeBlinks = 3; // Coffee powerup uses
+    [SerializeField] private int maxBlinkCount = 10; // Maximum blinks before depletion
+
+    [Header("Coffee Power-Up")]
+    [SerializeField] private int coffeePowerUps = 0; // Coffee items in inventory (max 3)
+    [SerializeField] private int maxCoffeePowerUps = 3; // Maximum coffee items player can hold
+    [SerializeField] private float coffeeDuration = 5f; // How long coffee blink lasts
+    [SerializeField] private bool isCoffeeActive = false; // Currently using coffee power-up
 
     [Header("Layer References")]
     [SerializeField] private string normalSolidLayer = "NormalSolid";
@@ -40,6 +46,7 @@ public class WorldStateManager : MonoBehaviour
     private bool isBlinking = false;
     private bool isOnCooldown = false;
     private float currentBlinkTimer = 0f;
+    private float coffeeTimer = 0f;
 
     // Visual effects tracking
     private SpriteRenderer[] allSprites;
@@ -51,17 +58,27 @@ public class WorldStateManager : MonoBehaviour
     // Events
     public event Action OnEnterBlink;
     public event Action OnExitBlink;
-    public event Action<int> OnBlinkCountChanged;
+    public event Action OnBlinkCountChanged;
+    public event Action OnCoffeeBlinkChanged;
+    public event Action OnCoffeePowerUpChanged;
 
     // Properties
     public WorldState CurrentState => currentState;
     public bool IsBlinking => isBlinking;
     public bool IsOnCooldown => isOnCooldown;
+    public bool IsCoffeeActive => isCoffeeActive;
     public bool CanBlink => !isBlinking && !isOnCooldown;
     public int BlinkCount => blinkCount;
-    public int CoffeeBlinks => coffeeBlinks;
+    public int CurrentBlinkCount => blinkCount; // Remaining blinks
+    public int MaxBlinkCount => maxBlinkCount;
+    public int CoffeePowerUps => coffeePowerUps;
+    public int MaxCoffeePowerUps => maxCoffeePowerUps;
     public float BlinkDuration => blinkDuration;
     public float BlinkCooldown => blinkCooldown;
+    public float CoffeeDuration => coffeeDuration;
+
+    // Legacy property for compatibility
+    public bool HasCoffeeBlink => coffeePowerUps > 0;
 
     void Awake()
     {
@@ -94,8 +111,18 @@ public class WorldStateManager : MonoBehaviour
 
     void Update()
     {
+        // Handle coffee power-up timer
+        if (isCoffeeActive)
+        {
+            coffeeTimer -= Time.deltaTime;
+            if (coffeeTimer <= 0f)
+            {
+                DeactivateCoffeePowerUp();
+            }
+        }
+
         // Handle blink timer for auto-return to normal
-        if (isBlinking)
+        if (isBlinking && !isCoffeeActive) // Don't auto-exit during coffee mode
         {
             currentBlinkTimer -= Time.deltaTime;
             if (currentBlinkTimer <= 0f)
@@ -151,26 +178,67 @@ public class WorldStateManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Use coffee to blink without activating enemies
+    /// Activate coffee power-up for extended blink without enemy chase
     /// </summary>
-    public bool TryCoffeeBlink()
+    public bool ActivateCoffeePowerUp()
     {
-        if (!CanBlink)
+        if (isCoffeeActive)
         {
-            Debug.Log($"Cannot coffee blink: {(isBlinking ? "Already blinking" : "On cooldown")}");
+            Debug.Log("Coffee power-up already active!");
             return false;
         }
 
-        if (coffeeBlinks <= 0)
+        if (coffeePowerUps <= 0)
         {
-            Debug.Log("No coffee blinks remaining!");
+            Debug.Log("No coffee power-ups available!");
             return false;
         }
 
-        coffeeBlinks--;
-        EnterBlink();
-        Debug.Log($"Coffee blink used! {coffeeBlinks} remaining");
+        // Consume one coffee power-up
+        coffeePowerUps = Mathf.Max(0, coffeePowerUps - 1);
+        isCoffeeActive = true;
+        coffeeTimer = coffeeDuration;
+
+        Debug.Log($"Coffee power-up activated! Duration: {coffeeDuration}s, Remaining: {coffeePowerUps}/{maxCoffeePowerUps}");
+
+        // Enter blink state if not already in it
+        if (!isBlinking)
+        {
+            EnterBlink();
+        }
+        else
+        {
+            // Already blinking, just extend the duration
+            currentBlinkTimer = coffeeDuration;
+        }
+
+        // Fire events
+        OnCoffeePowerUpChanged?.Invoke();
+        OnCoffeeBlinkChanged?.Invoke();
+
         return true;
+    }
+
+    /// <summary>
+    /// Deactivate coffee power-up and return to normal
+    /// </summary>
+    private void DeactivateCoffeePowerUp()
+    {
+        if (!isCoffeeActive) return;
+
+        isCoffeeActive = false;
+        coffeeTimer = 0f;
+
+        Debug.Log("Coffee power-up duration ended");
+
+        // Exit blink state
+        if (isBlinking)
+        {
+            ExitBlink();
+        }
+
+        // Fire events
+        OnCoffeeBlinkChanged?.Invoke();
     }
 
     /// <summary>
@@ -197,7 +265,7 @@ public class WorldStateManager : MonoBehaviour
         }
 
         OnEnterBlink?.Invoke();
-        OnBlinkCountChanged?.Invoke(blinkCount);
+        OnBlinkCountChanged?.Invoke();
     }
 
     /// <summary>
@@ -242,15 +310,21 @@ public class WorldStateManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Add a coffee powerup charge
+    /// Add a coffee power-up to inventory (max 3)
     /// </summary>
-    public void AddCoffeeBlink()
+    public bool AddCoffeePowerUp()
     {
-        if (coffeeBlinks < 3)
+        if (coffeePowerUps >= maxCoffeePowerUps)
         {
-            coffeeBlinks++;
-            Debug.Log($"Coffee collected! Blinks: {coffeeBlinks}/3");
+            Debug.Log($"Coffee inventory full! Cannot hold more than {maxCoffeePowerUps}");
+            return false;
         }
+
+        coffeePowerUps = Mathf.Min(coffeePowerUps + 1, maxCoffeePowerUps);
+        Debug.Log($"Coffee power-up added! Count: {coffeePowerUps}/{maxCoffeePowerUps}");
+
+        OnCoffeePowerUpChanged?.Invoke();
+        return true;
     }
 
     /// <summary>
@@ -259,7 +333,9 @@ public class WorldStateManager : MonoBehaviour
     public void ResetStats()
     {
         blinkCount = 0;
-        coffeeBlinks = 3;
+        coffeePowerUps = 0;
+        isCoffeeActive = false;
+        coffeeTimer = 0f;
 
         if (isBlinking)
         {
@@ -267,6 +343,8 @@ public class WorldStateManager : MonoBehaviour
         }
 
         Debug.Log("WorldStateManager stats reset");
+        OnBlinkCountChanged?.Invoke();
+        OnCoffeePowerUpChanged?.Invoke();
     }
 
     /// <summary>

@@ -21,13 +21,17 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float fastSpeed = 2f;
 
     [Header("Visual Settings")]
+    [SerializeField] private Sprite normalSprite;
+    [SerializeField] private Sprite ghostSprite;
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color ghostColor = new Color(0.2f, 0.2f, 0.2f, 0.7f); // Dark semi-transparent
+    [SerializeField] private bool flipSpriteOnDirection = true;
 
     // State tracking
     private EnemyState currentState = EnemyState.Idle;
     private Vector3 spawnPosition;
     private float moveSpeed;
+    private float lastXDirection = 1f; // Track last movement direction for sprite flipping
 
     void Awake()
     {
@@ -82,6 +86,7 @@ public class EnemyController : MonoBehaviour
         if (triggerCollider != null)
         {
             triggerCollider.isTrigger = true; // Trigger collider for player detection
+            triggerCollider.enabled = false; // Start disabled - only active during blink
         }
     }
 
@@ -137,9 +142,16 @@ public class EnemyController : MonoBehaviour
 
     void Update()
     {
-        // Only chase in Chasing state
+        // Only chase in Chasing state AND when coffee power-up is not active
         if (currentState == EnemyState.Chasing && player != null)
         {
+            // Don't chase if coffee power-up is active
+            if (WorldStateManager.Instance != null && WorldStateManager.Instance.IsCoffeeActive)
+            {
+                // Enemy is in ghost form but not chasing during coffee mode
+                return;
+            }
+
             ChasePlayer();
         }
     }
@@ -154,6 +166,11 @@ public class EnemyController : MonoBehaviour
         // Visual transformation
         if (spriteRenderer != null)
         {
+            // Change sprite to ghost form if available
+            if (ghostSprite != null)
+            {
+                spriteRenderer.sprite = ghostSprite;
+            }
             spriteRenderer.color = ghostColor;
         }
 
@@ -170,6 +187,12 @@ public class EnemyController : MonoBehaviour
             physicsCollider.enabled = false;
         }
 
+        // Enable trigger collider to detect player during blink
+        if (triggerCollider != null)
+        {
+            triggerCollider.enabled = true;
+        }
+
         Debug.Log($"{gameObject.name} transformed into ghost - chasing player");
     }
 
@@ -183,6 +206,11 @@ public class EnemyController : MonoBehaviour
         // Visual restoration
         if (spriteRenderer != null)
         {
+            // Change sprite back to normal form if available
+            if (normalSprite != null)
+            {
+                spriteRenderer.sprite = normalSprite;
+            }
             spriteRenderer.color = normalColor;
         }
 
@@ -199,6 +227,12 @@ public class EnemyController : MonoBehaviour
             physicsCollider.enabled = true;
         }
 
+        // Disable trigger collider in normal mode (enemies are harmless)
+        if (triggerCollider != null)
+        {
+            triggerCollider.enabled = false;
+        }
+
         Debug.Log($"{gameObject.name} returned to normal form");
     }
 
@@ -209,6 +243,32 @@ public class EnemyController : MonoBehaviour
     {
         Vector3 direction = (player.position - transform.position).normalized;
         transform.position += direction * moveSpeed * Time.deltaTime;
+
+        // Update sprite flipping based on movement direction
+        if (flipSpriteOnDirection && Mathf.Abs(direction.x) > 0.01f)
+        {
+            UpdateSpriteFlip(direction.x);
+        }
+    }
+
+    /// <summary>
+    /// Update sprite flip based on X direction
+    /// </summary>
+    private void UpdateSpriteFlip(float xDirection)
+    {
+        if (spriteRenderer == null) return;
+
+        // Only flip when direction actually changes
+        if (xDirection < 0 && lastXDirection >= 0)
+        {
+            spriteRenderer.flipX = true;
+            lastXDirection = xDirection;
+        }
+        else if (xDirection > 0 && lastXDirection <= 0)
+        {
+            spriteRenderer.flipX = false;
+            lastXDirection = xDirection;
+        }
     }
 
     /// <summary>
@@ -221,6 +281,11 @@ public class EnemyController : MonoBehaviour
 
         if (spriteRenderer != null)
         {
+            // Restore normal sprite if available
+            if (normalSprite != null)
+            {
+                spriteRenderer.sprite = normalSprite;
+            }
             spriteRenderer.color = normalColor;
         }
 
@@ -236,6 +301,12 @@ public class EnemyController : MonoBehaviour
         if (physicsCollider != null)
         {
             physicsCollider.enabled = true;
+        }
+
+        // Disable trigger collider (normal mode)
+        if (triggerCollider != null)
+        {
+            triggerCollider.enabled = false;
         }
 
         Debug.Log($"{gameObject.name} reset to spawn position");
@@ -257,9 +328,15 @@ public class EnemyController : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        // Only damage player when chasing (in ghost form during blink)
+        // Only damage player when chasing (in ghost form during blink) AND coffee power-up is not active
         if (currentState == EnemyState.Chasing)
         {
+            // Don't damage player if coffee power-up is active
+            if (WorldStateManager.Instance != null && WorldStateManager.Instance.IsCoffeeActive)
+            {
+                return; // Player is safe during coffee mode
+            }
+
             if (collision.gameObject.CompareTag("Player"))
             {
                 // Trigger player death

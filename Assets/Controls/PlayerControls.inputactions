@@ -23,6 +23,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "blink",
+                    "type": "Button",
+                    "id": "f6a33668-0a53-4848-8bd2-4951bda46e94",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -168,32 +177,15 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
-                }
-            ]
-        },
-        {
-            "name": "BlinkController",
-            "id": "005d00fc-54e6-4fd8-9c18-529f17cd4329",
-            "actions": [
-                {
-                    "name": "Blink",
-                    "type": "Button",
-                    "id": "358a288d-26ac-4728-a563-4c419efa4d46",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
+                },
                 {
                     "name": "",
-                    "id": "831a13ed-21ec-4148-9db0-2db94e4a959c",
+                    "id": "e6fb8c90-26d5-4975-abc4-85a76e09f86e",
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Blink",
+                    "action": "blink",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

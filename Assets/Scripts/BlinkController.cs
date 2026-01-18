@@ -30,12 +30,20 @@ public class BlinkController : MonoBehaviour
     IEnumerator reverseGravity()
     {
         canBlink = false;
-        playerRigidBody.gravityScale *= -1;
+        playerRigidBody.gravityScale = -1;
         yield return new WaitForSecondsRealtime(blinkTime);
-        playerRigidBody.gravityScale *= -1;
+        playerRigidBody.gravityScale = -1;
         yield return new WaitForSecondsRealtime(blinkCooldown);
         canBlink = true;
 
-        
+
+    }
+
+    public void forceBlink()
+    {
+        if (canBlink)
+        {
+            StartCoroutine(reverseGravity());
+        }
     }
 }

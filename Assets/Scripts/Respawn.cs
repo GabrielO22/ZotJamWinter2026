@@ -16,8 +16,13 @@ public class Respawn : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            rigidBody.linearVelocity = Vector2.zero;
-            transform.position = respawnPoint;
+            EnemyMovement enemy = collision.gameObject.GetComponent<EnemyMovement>();
+            if (enemy != null && enemy.chasingState())
+            {
+                rigidBody.linearVelocity = Vector2.zero;
+                transform.position = respawnPoint;
+            }
+            
         }
     }
 

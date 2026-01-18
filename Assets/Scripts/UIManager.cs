@@ -1,6 +1,7 @@
 using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 
@@ -8,8 +9,31 @@ using UnityEngine.SceneManagement;
 public class Pause : MonoBehaviour
 {
     public GameObject pauseMenu;
-    private bool isPaused = false;
+    public GameObject endScreen;
 
+    private bool isPaused = false;
+    private bool hasEnded = false;
+
+    void Start()
+    {
+        if (pauseMenu != null) pauseMenu.SetActive(false);
+        if (endScreen != null) endScreen.SetActive(false);
+    }
+
+    void Update()
+    {
+        if (!hasEnded && Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (isPaused)
+            {
+                resumeGame();
+            }
+            else
+            {
+                pauseGame();
+            }
+        }
+    }
     public void onPause()
     {
         if (isPaused)
@@ -37,11 +61,29 @@ public class Pause : MonoBehaviour
         isPaused = false;
     }
 
+    public void showendScreen()
+    {
+        if (hasEnded) return;
+
+        hasEnded = true;
+
+        Time.timeScale = 0f;
+
+        if (pauseMenu != null) pauseMenu.SetActive(false);
+
+        if (endScreen != null) endScreen.SetActive(true);
+    }
+
     public void restartGame()
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    public void gotoMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
+    }
 }
     

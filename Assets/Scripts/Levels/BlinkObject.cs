@@ -168,8 +168,10 @@ public class BlinkObject : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
+        #if UNITY_EDITOR
         // Draw label showing visibility mode
         UnityEditor.Handles.Label(transform.position + Vector3.up, visibilityMode.ToString());
+        #endif
     }
 }
 

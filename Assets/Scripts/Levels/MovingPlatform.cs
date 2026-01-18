@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEditor;
 
 /// <summary>
 /// Platform that moves/shifts position when player blinks
@@ -179,9 +180,11 @@ public class MovingPlatform : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
+        #if UNITY_EDITOR
         // Draw labels
         UnityEditor.Handles.Label(normalPosition + Vector3.up * 0.5f, "Normal Pos");
         UnityEditor.Handles.Label(normalPosition + blinkOffset + Vector3.up * 0.5f, "Blink Pos");
+        #endif
     }
 }
 

@@ -196,7 +196,7 @@ public class HUDManager : MonoBehaviour
         // Change color based on availability
         if (current == 0)
         {
-            coffeePowerUpCountText.color = Color.gray; // No coffee
+            coffeePowerUpCountText.color = Color.white; // No coffee
         }
         else if (current >= max)
         {

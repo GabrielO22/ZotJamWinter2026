@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -14,8 +13,6 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce = 12f;
     public float blinkTime = 0.5f;
     public float blinkCooldownTime = 2f;
-
-    private bool canBlink = true;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -60,30 +57,4 @@ public class PlayerMovement : MonoBehaviour
             onGround = false;
         }
     }
-
-    public void enterBlink(InputAction.CallbackContext context)
-    {
-        if (!context.performed) return;
-
-        if (!canBlink) return;
-
-        StartCoroutine(blinkRoutine());
-        // changes to players behavior in here
-    }
-
-    private IEnumerator blinkRoutine()
-    {
-        canBlink = false;
-
-        WorldState.Instance.enteringBlink();
-        rigidBody.gravityScale *= -1;
-
-        yield return new WaitForSecondsRealtime(blinkTime);
-
-        rigidBody.gravityScale *= -1;
-        WorldState.Instance.exitingBlink();
-        yield return new WaitForSecondsRealtime(blinkTime);
-        canBlink = true;
-    }
-  
 }

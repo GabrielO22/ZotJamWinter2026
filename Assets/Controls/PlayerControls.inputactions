@@ -190,6 +190,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "BlinkController",
+            "id": "679b7c83-bfcc-490f-8da0-1842785974d4",
+            "actions": [
+                {
+                    "name": "Blink",
+                    "type": "Button",
+                    "id": "3cf971c6-8361-42b8-a169-5478d4df4819",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "a0f76e02-65c1-4f23-986f-25927be44fe6",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Blink",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

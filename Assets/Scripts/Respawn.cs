@@ -3,7 +3,7 @@ using UnityEngine;
 public class Respawn : MonoBehaviour
 {
     private Rigidbody2D rb;
-    private Vector2 respawnPoint = new Vector2(0, 10);
+    private Vector2 respawnPoint = new Vector2(0, 0);
 
     public ManaController manaController;
 

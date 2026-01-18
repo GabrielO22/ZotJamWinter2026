@@ -38,6 +38,19 @@ public class Respawn : MonoBehaviour
             other.gameObject.SetActive(false);
         }
 
+        if (other.gameObject.CompareTag("Enemy"))
+        {
+            EnemyMovement enemy = other.gameObject.GetComponent<EnemyMovement>();
+            Debug.Log(enemy);
+            Debug.Log(enemy.isChasing);
+            if (enemy != null && enemy.isChasing)
+            {
+                rigidBody.linearVelocity = Vector2.zero;
+                transform.position = respawnPoint;
+                manaController.refill();
+            }
+        }
+
     }
 
     

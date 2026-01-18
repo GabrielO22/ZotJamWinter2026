@@ -6,7 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rigidBody;
 
-    private bool onGround = false;
+    public bool onGround = false;
 
     private Vector2 moveInput;
 

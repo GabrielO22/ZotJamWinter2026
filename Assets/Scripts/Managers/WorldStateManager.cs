@@ -506,12 +506,3 @@ public class WorldStateManager : MonoBehaviour
         Debug.Log($"Applied {(enteringBlink ? "blink" : "normal")} visual effects");
     }
 }
-
-/// <summary>
-/// Enum representing the two world states
-/// </summary>
-public enum WorldState
-{
-    Normal,
-    Blink
-}

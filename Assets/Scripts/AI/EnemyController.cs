@@ -20,6 +20,12 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float mediumSpeed = 1f;
     [SerializeField] private float fastSpeed = 2f;
 
+    [Header("Patrol Settings")]
+    [SerializeField] private bool enablePatrol = true;
+    [SerializeField] private float patrolSpeed = 0.5f;
+    [SerializeField] private float patrolDistance = 3f;
+    [SerializeField] private float idleTime = 2f; // Time to pause at patrol points
+
     [Header("Visual Settings")]
     [SerializeField] private Sprite normalSprite;
     [SerializeField] private Sprite ghostSprite;
@@ -32,6 +38,13 @@ public class EnemyController : MonoBehaviour
     private Vector3 spawnPosition;
     private float moveSpeed;
     private float lastXDirection = 1f; // Track last movement direction for sprite flipping
+
+    // Patrol tracking
+    private Vector3 patrolStartPoint;
+    private Vector3 patrolEndPoint;
+    private Vector3 patrolTarget;
+    private float idleTimer = 0f;
+    private bool isIdling = false;
 
     void Awake()
     {
@@ -67,6 +80,15 @@ public class EnemyController : MonoBehaviour
 
         // Set speed based on type
         moveSpeed = GetSpeedForType(speedType);
+
+        // Initialize patrol points
+        if (enablePatrol)
+        {
+            patrolStartPoint = transform.position;
+            patrolEndPoint = transform.position + Vector3.right * patrolDistance;
+            patrolTarget = patrolEndPoint;
+            currentState = EnemyState.Patrolling;
+        }
 
         // Initialize enemy as idle with gravity enabled (Dynamic body)
         if (rb != null)
@@ -142,17 +164,74 @@ public class EnemyController : MonoBehaviour
 
     void Update()
     {
-        // Only chase in Chasing state AND when coffee power-up is not active
-        if (currentState == EnemyState.Chasing && player != null)
+        // Handle different states
+        switch (currentState)
         {
-            // Don't chase if coffee power-up is active
-            if (WorldStateManager.Instance != null && WorldStateManager.Instance.IsCoffeeActive)
-            {
-                // Enemy is in ghost form but not chasing during coffee mode
-                return;
-            }
+            case EnemyState.Idle:
+                // Do nothing - just stand there
+                break;
 
-            ChasePlayer();
+            case EnemyState.Patrolling:
+                UpdatePatrol();
+                break;
+
+            case EnemyState.Chasing:
+                // Don't chase if coffee power-up is active
+                if (WorldStateManager.Instance != null && WorldStateManager.Instance.IsCoffeeActive)
+                {
+                    // Enemy is in ghost form but not chasing during coffee mode
+                    return;
+                }
+
+                if (player != null)
+                {
+                    ChasePlayer();
+                }
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Update patrol movement - walk back and forth
+    /// </summary>
+    private void UpdatePatrol()
+    {
+        if (isIdling)
+        {
+            // Wait at patrol point
+            idleTimer -= Time.deltaTime;
+            if (idleTimer <= 0f)
+            {
+                isIdling = false;
+
+                // Switch patrol target
+                if (patrolTarget == patrolEndPoint)
+                {
+                    patrolTarget = patrolStartPoint;
+                }
+                else
+                {
+                    patrolTarget = patrolEndPoint;
+                }
+            }
+            return;
+        }
+
+        // Move toward patrol target
+        Vector3 direction = (patrolTarget - transform.position).normalized;
+        transform.position += direction * patrolSpeed * Time.deltaTime;
+
+        // Update sprite flip
+        if (flipSpriteOnDirection && Mathf.Abs(direction.x) > 0.01f)
+        {
+            UpdateSpriteFlip(direction.x);
+        }
+
+        // Check if reached patrol point
+        if (Vector3.Distance(transform.position, patrolTarget) < 0.1f)
+        {
+            isIdling = true;
+            idleTimer = idleTime;
         }
     }
 
@@ -201,7 +280,8 @@ public class EnemyController : MonoBehaviour
     /// </summary>
     private void HandleExitBlink()
     {
-        currentState = EnemyState.Idle;
+        // Return to patrol if enabled, otherwise idle
+        currentState = enablePatrol ? EnemyState.Patrolling : EnemyState.Idle;
 
         // Visual restoration
         if (spriteRenderer != null)
@@ -277,7 +357,15 @@ public class EnemyController : MonoBehaviour
     public void ResetToSpawn()
     {
         transform.position = spawnPosition;
-        currentState = EnemyState.Idle;
+        currentState = enablePatrol ? EnemyState.Patrolling : EnemyState.Idle;
+
+        // Reset patrol state
+        if (enablePatrol)
+        {
+            patrolTarget = patrolEndPoint;
+            isIdling = false;
+            idleTimer = 0f;
+        }
 
         if (spriteRenderer != null)
         {
@@ -361,6 +449,25 @@ public class EnemyController : MonoBehaviour
         // Draw spawn position
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(Application.isPlaying ? spawnPosition : transform.position, 0.5f);
+
+        // Draw patrol path
+        if (enablePatrol)
+        {
+            Vector3 start = Application.isPlaying ? patrolStartPoint : transform.position;
+            Vector3 end = Application.isPlaying ? patrolEndPoint : transform.position + Vector3.right * patrolDistance;
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(start, end);
+            Gizmos.DrawWireSphere(start, 0.3f);
+            Gizmos.DrawWireSphere(end, 0.3f);
+
+            // Draw current patrol target
+            if (Application.isPlaying && currentState == EnemyState.Patrolling)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawLine(transform.position, patrolTarget);
+            }
+        }
 
         // Draw line to player when chasing
         if (currentState == EnemyState.Chasing && player != null)

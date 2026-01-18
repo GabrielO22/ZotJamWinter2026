@@ -1,9 +1,6 @@
 using System;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
-
 
 public class Pause : MonoBehaviour
 {

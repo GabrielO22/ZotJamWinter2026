@@ -269,10 +269,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f42344097f4a4f4d9a875bbc92b9e0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
-  player: {fileID: 1389279944}
-  cameraSpeed: 2
+  target: {fileID: 0}
+  followSpeed: 2
   fixedX: 0
   offsetZ: -10
+  lockX: 1
 --- !u!1 &146986616
 GameObject:
   m_ObjectHideFlags: 0
@@ -487,7 +488,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Movement
   player: {fileID: 1389279944}
-  EnemySpeed: 1
+  edgeCheck: {fileID: 0}
+  wallCheck: {fileID: 0}
+  enemySpeed: 1
+  isChasing: 0
+  patrolSpeed: 1
+  edgeRayLength: 0.4
+  wallRayLength: 0.2
+  turnCooldown: 0.2
+  floorTag: Floor
 --- !u!4 &414814899
 Transform:
   m_ObjectHideFlags: 0
@@ -745,8 +754,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 7
   jumpForce: 12
-  blinkTime: 0.5
-  blinkCooldownTime: 2
+  groundCheck: {fileID: 0}
+  groundCheckRadius: 0.15
+  floorTag: Floor
+  onGround: 0
 --- !u!114 &1389279947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -837,6 +848,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88dec6d31b1b6bb4997592281db89573, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Respawn
+  manaController: {fileID: 0}
 --- !u!61 &1389279949
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -913,9 +925,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54513603ec79a884d84b0b76789945a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BlinkController
+  canBlink: 1
+  isBlinking: 0
   player: {fileID: 1389279941}
   blinkTime: 0.5
   blinkCooldown: 2
+  manaController: {fileID: 0}
+  normalplatform: {fileID: 0}
+  evilplatform: {fileID: 0}
 --- !u!4 &1484684840
 Transform:
   m_ObjectHideFlags: 0
@@ -1169,10 +1186,10 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
-  m_Color: {r: 0.18396229, g: 1, b: 0.4402315, a: 1}
+  m_Sprite: {fileID: -33883568847575937, guid: 67241dac1464a2b49bde20e5d9629d73, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1215,17 +1232,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.037126064, y: -0.12414169}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 18.08, y: 21.022053}
     newSize: {x: 0.16, y: 0.16}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 18.153454, y: 21.11081}
   m_EdgeRadius: 0
 --- !u!4 &2120963399
 Transform:
@@ -1236,8 +1253,8 @@ Transform:
   m_GameObject: {fileID: 2120963396}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.2956, y: 1.7225, z: 0}
-  m_LocalScale: {x: 1.1488, y: 1.2149, z: 1}
+  m_LocalPosition: {x: -3.2449, y: 1.6655, z: 0}
+  m_LocalScale: {x: 0.070837826, y: 0.06355964, z: 0.05677964}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

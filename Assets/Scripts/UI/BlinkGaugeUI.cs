@@ -27,6 +27,8 @@ public class BlinkGaugeUI : MonoBehaviour
 
     private Vector3 originalPosition;
     private float currentShakeIntensity = 0f;
+    private float shakeOffsetX = 0f; // Random offset for Perlin noise
+    private float shakeOffsetY = 0f;
 
     void Awake()
     {
@@ -35,6 +37,10 @@ public class BlinkGaugeUI : MonoBehaviour
         {
             originalPosition = gaugeContainer.localPosition;
         }
+
+        // Initialize random offsets for Perlin noise shake
+        shakeOffsetX = Random.Range(0f, 1000f);
+        shakeOffsetY = Random.Range(0f, 1000f);
 
         // Create default gradient if none assigned
         if (colorGradient == null)
@@ -89,11 +95,17 @@ public class BlinkGaugeUI : MonoBehaviour
             float shakeAmount = shakeCurve.Evaluate(1f - normalizedTime);
             currentShakeIntensity = shakeAmount * maxShakeIntensity;
 
-            // Apply shake offset
+            // Apply shake offset using Perlin noise for smooth random movement
             if (currentShakeIntensity > 0.01f)
             {
-                float shakeX = Mathf.Sin(Time.time * shakeFrequency) * currentShakeIntensity;
-                float shakeY = Mathf.Cos(Time.time * shakeFrequency * 1.3f) * currentShakeIntensity;
+                // Use Perlin noise for smooth, bounded shake
+                float time = Time.time * shakeFrequency * 0.1f; // Scale down frequency for Perlin
+                float noiseX = Mathf.PerlinNoise(shakeOffsetX + time, 0f) * 2f - 1f; // Range: -1 to 1
+                float noiseY = Mathf.PerlinNoise(shakeOffsetY + time, 0f) * 2f - 1f; // Range: -1 to 1
+
+                float shakeX = noiseX * currentShakeIntensity;
+                float shakeY = noiseY * currentShakeIntensity;
+
                 gaugeContainer.localPosition = originalPosition + new Vector3(shakeX, shakeY, 0f);
             }
             else

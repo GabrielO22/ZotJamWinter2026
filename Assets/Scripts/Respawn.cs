@@ -5,6 +5,7 @@ public class Respawn : MonoBehaviour
 {
     private Rigidbody2D rigidBody;
     private Vector2 respawnPoint = new Vector2(0, 0);
+    public ManaController manaController;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -16,8 +17,15 @@ public class Respawn : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            rigidBody.linearVelocity = Vector2.zero;
-            transform.position = respawnPoint;
+            EnemyMovement enemy = collision.gameObject.GetComponent<EnemyMovement>();
+            Debug.Log(enemy);
+            Debug.Log(enemy.isChasing);
+            if (enemy != null && enemy.isChasing)
+            {
+                rigidBody.linearVelocity = Vector2.zero;
+                transform.position = respawnPoint;
+                manaController.refill();
+            }
         }
     }
 

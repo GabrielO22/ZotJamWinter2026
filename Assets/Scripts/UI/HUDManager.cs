@@ -23,6 +23,10 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI coffeePowerUpCountText;
     [SerializeField] private TextMeshProUGUI coffeeActiveText;
 
+    [Header("Forced Blink Display")]
+    [SerializeField] private BlinkGaugeUI blinkGaugeUI; // Optional: Reference to blink gauge UI
+    [SerializeField] private TextMeshProUGUI forcedBlinkWarningText; // Optional: Warning text when gauge is low
+
     [Header("References")]
     [SerializeField] private PlayerHealth playerHealth;
     [SerializeField] private WorldStateManager worldStateManager;
@@ -75,6 +79,7 @@ public class HUDManager : MonoBehaviour
             worldStateManager.OnBlinkCountChanged += UpdateBlinkCount;
             worldStateManager.OnCoffeeBlinkChanged += UpdateCoffeeActiveDisplay;
             worldStateManager.OnCoffeePowerUpChanged += UpdateCoffeePowerUpCount;
+            worldStateManager.OnForcedBlink += HandleForcedBlink;
             UpdateBlinkCount(); // Initial display
             UpdateCoffeePowerUpCount(); // Initial display
             UpdateCoffeeActiveDisplay(); // Initial display
@@ -82,6 +87,12 @@ public class HUDManager : MonoBehaviour
         else
         {
             Debug.LogWarning("HUDManager: WorldStateManager not found!");
+        }
+
+        // Initialize forced blink warning as hidden
+        if (forcedBlinkWarningText != null)
+        {
+            forcedBlinkWarningText.gameObject.SetActive(false);
         }
     }
 
@@ -98,6 +109,7 @@ public class HUDManager : MonoBehaviour
             worldStateManager.OnBlinkCountChanged -= UpdateBlinkCount;
             worldStateManager.OnCoffeeBlinkChanged -= UpdateCoffeeActiveDisplay;
             worldStateManager.OnCoffeePowerUpChanged -= UpdateCoffeePowerUpCount;
+            worldStateManager.OnForcedBlink -= HandleForcedBlink;
         }
     }
 
@@ -149,7 +161,7 @@ public class HUDManager : MonoBehaviour
         int current = worldStateManager.CurrentBlinkCount;
         int max = worldStateManager.MaxBlinkCount;
 
-        blinkCountText.text = $"Blinks: {current}";
+        blinkCountText.text = $"Blinks (E): {current}";
 
         // Change color based on blink availability
         if (current == 0)
@@ -179,7 +191,7 @@ public class HUDManager : MonoBehaviour
         int current = worldStateManager.CoffeePowerUps;
         int max = worldStateManager.MaxCoffeePowerUps;
 
-        coffeePowerUpCountText.text = $"Coffee: {current}/{max}";
+        coffeePowerUpCountText.text = $"Coffee (Q): {current}/{max}";
 
         // Change color based on availability
         if (current == 0)
@@ -220,5 +232,64 @@ public class HUDManager : MonoBehaviour
         }
 
         Debug.Log($"HUD: Coffee active display updated (active: {isCoffeeActive})");
+    }
+
+    /// <summary>
+    /// Handle forced blink event - show warning or feedback
+    /// </summary>
+    private void HandleForcedBlink()
+    {
+        if (forcedBlinkWarningText != null)
+        {
+            forcedBlinkWarningText.text = "FORCED BLINK!";
+            forcedBlinkWarningText.color = Color.red;
+            forcedBlinkWarningText.gameObject.SetActive(true);
+
+            // Hide warning after a short delay
+            StartCoroutine(HideForcedBlinkWarning());
+        }
+
+        Debug.Log("HUD: Forced blink warning displayed");
+    }
+
+    /// <summary>
+    /// Hide forced blink warning after delay
+    /// </summary>
+    private System.Collections.IEnumerator HideForcedBlinkWarning()
+    {
+        yield return new WaitForSeconds(2f);
+
+        if (forcedBlinkWarningText != null)
+        {
+            forcedBlinkWarningText.gameObject.SetActive(false);
+        }
+    }
+
+    void Update()
+    {
+        // Optional: Show low gauge warning
+        if (worldStateManager != null && forcedBlinkWarningText != null)
+        {
+            float normalizedTime = worldStateManager.GetNormalizedBlinkGaugeTime();
+
+            // Show warning when gauge is below 25%
+            if (normalizedTime < 0.25f && normalizedTime > 0f && !worldStateManager.IsBlinking)
+            {
+                if (!forcedBlinkWarningText.gameObject.activeSelf)
+                {
+                    forcedBlinkWarningText.text = "BLINK SOON!";
+                    forcedBlinkWarningText.color = Color.yellow;
+                    forcedBlinkWarningText.gameObject.SetActive(true);
+                }
+            }
+            else if (normalizedTime >= 0.25f)
+            {
+                // Hide warning when gauge recovers
+                if (forcedBlinkWarningText.gameObject.activeSelf && forcedBlinkWarningText.text == "BLINK SOON!")
+                {
+                    forcedBlinkWarningText.gameObject.SetActive(false);
+                }
+            }
+        }
     }
 }

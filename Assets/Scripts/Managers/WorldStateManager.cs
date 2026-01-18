@@ -17,6 +17,11 @@ public class WorldStateManager : MonoBehaviour
     [SerializeField] private float blinkDuration = 1f;
     [SerializeField] private float blinkCooldown = 0.5f;
 
+    [Header("Forced Blink Settings")]
+    [SerializeField] private bool enableForcedBlink = true;
+    [SerializeField] private float forcedBlinkTime = 10f; // Time until forced blink
+    [SerializeField] private bool resetGaugeOnManualBlink = true; // Reset timer when player manually blinks
+
     [Header("Statistics")]
     [SerializeField] private int blinkCount = 0;
     [SerializeField] private int maxBlinkCount = 10; // Maximum blinks before depletion
@@ -48,6 +53,10 @@ public class WorldStateManager : MonoBehaviour
     private float currentBlinkTimer = 0f;
     private float coffeeTimer = 0f;
 
+    // Forced blink tracking
+    private float forcedBlinkTimer = 0f;
+    private bool wasManualBlink = false;
+
     // Visual effects tracking
     private SpriteRenderer[] allSprites;
     private Color[] originalSpriteColors;
@@ -61,6 +70,7 @@ public class WorldStateManager : MonoBehaviour
     public event Action OnBlinkCountChanged;
     public event Action OnCoffeeBlinkChanged;
     public event Action OnCoffeePowerUpChanged;
+    public event Action OnForcedBlink; // Triggered when forced blink activates
 
     // Properties
     public WorldState CurrentState => currentState;
@@ -107,6 +117,12 @@ public class WorldStateManager : MonoBehaviour
     {
         // Initialize sprite list for color effects
         InitializeSprites();
+
+        // Initialize forced blink timer
+        if (enableForcedBlink)
+        {
+            forcedBlinkTimer = forcedBlinkTime;
+        }
     }
 
     void Update()
@@ -128,6 +144,17 @@ public class WorldStateManager : MonoBehaviour
             if (currentBlinkTimer <= 0f)
             {
                 ExitBlink();
+            }
+        }
+
+        // Handle forced blink timer (only when not already blinking)
+        if (enableForcedBlink && !isBlinking && !isOnCooldown)
+        {
+            forcedBlinkTimer -= Time.deltaTime;
+            if (forcedBlinkTimer <= 0f)
+            {
+                // Force player to blink
+                TriggerForcedBlink();
             }
         }
 
@@ -173,8 +200,20 @@ public class WorldStateManager : MonoBehaviour
             return false;
         }
 
+        wasManualBlink = true;
         EnterBlink();
         return true;
+    }
+
+    /// <summary>
+    /// Trigger forced blink when timer runs out
+    /// </summary>
+    private void TriggerForcedBlink()
+    {
+        Debug.Log("Forced blink triggered!");
+        wasManualBlink = false;
+        OnForcedBlink?.Invoke();
+        EnterBlink();
     }
 
     /// <summary>
@@ -289,6 +328,22 @@ public class WorldStateManager : MonoBehaviour
             shakeTimer = shakeDuration * 0.5f; // Smaller shake on exit
         }
 
+        // Reset forced blink timer after any blink
+        if (enableForcedBlink)
+        {
+            // Always reset if it was a manual blink
+            // For forced blinks, reset unconditionally to prevent immediate re-trigger
+            if (wasManualBlink && resetGaugeOnManualBlink)
+            {
+                forcedBlinkTimer = forcedBlinkTime;
+            }
+            else if (!wasManualBlink)
+            {
+                // Always reset after forced blink to prevent loop
+                forcedBlinkTimer = forcedBlinkTime;
+            }
+        }
+
         OnExitBlink?.Invoke();
 
         // Start cooldown
@@ -337,6 +392,12 @@ public class WorldStateManager : MonoBehaviour
         isCoffeeActive = false;
         coffeeTimer = 0f;
 
+        // Reset forced blink timer
+        if (enableForcedBlink)
+        {
+            forcedBlinkTimer = forcedBlinkTime;
+        }
+
         if (isBlinking)
         {
             ExitBlink();
@@ -357,6 +418,28 @@ public class WorldStateManager : MonoBehaviour
         {
             cameraOriginalPosition = mainCamera.transform.localPosition;
         }
+    }
+
+    /// <summary>
+    /// Get normalized time remaining until forced blink (1 = full, 0 = empty)
+    /// Used by BlinkGaugeUI to display the gauge
+    /// </summary>
+    public float GetNormalizedBlinkGaugeTime()
+    {
+        if (!enableForcedBlink || forcedBlinkTime <= 0f)
+        {
+            return 1f; // Always full if forced blink is disabled
+        }
+
+        return Mathf.Clamp01(forcedBlinkTimer / forcedBlinkTime);
+    }
+
+    /// <summary>
+    /// Get remaining time until forced blink (in seconds)
+    /// </summary>
+    public float GetForcedBlinkTimeRemaining()
+    {
+        return enableForcedBlink ? forcedBlinkTimer : -1f;
     }
 
     /// <summary>

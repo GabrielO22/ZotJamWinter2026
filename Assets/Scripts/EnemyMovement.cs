@@ -26,6 +26,7 @@ public class EnemyMovement : MonoBehaviour
 
     [Tooltip("Tag used for platforms/walls (must match exactly).")]
     public string floorTag = "Floor";
+    public string playerTag = "Player";
 
     private int dir = 1; // 1 = right, -1 = left
     private float nextTurnTime = 0f;
@@ -122,7 +123,7 @@ public class EnemyMovement : MonoBehaviour
 
         // Raycast forward to check for wall ahead (only treat Floor-tagged things as walls)
         RaycastHit2D wallHit = Physics2D.Raycast(wallCheck.position, Vector2.right * dir, wallRayLength);
-        bool wallAhead = wallHit.collider != null && wallHit.collider.CompareTag(floorTag);
+        bool wallAhead = wallHit.collider != null && (wallHit.collider.CompareTag(floorTag) || wallHit.collider.CompareTag(playerTag));
 
         // Turn around if at edge or hitting wall — but not every frame (prevents wobble/spin)
         if (Time.time >= nextTurnTime && (!groundAhead || wallAhead))

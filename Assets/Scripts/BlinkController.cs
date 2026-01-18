@@ -49,11 +49,11 @@ public class BlinkController : MonoBehaviour
         }
 
         canBlink = false;
-        enterBlink?.Invoke();       // alert enemies about blink event
-        playerRigidBody.gravityScale *= -1;
+        enterBlink?.Invoke();
+        playerRigidBody.gravityScale *= -0.3125f;
         yield return new WaitForSecondsRealtime(blinkTime);
-        playerRigidBody.gravityScale *= -1;
-        exitBlink?.Invoke();        // disengage enemies from blink state
+        playerRigidBody.gravityScale *= -3.2f;
+        exitBlink?.Invoke();
         yield return new WaitForSecondsRealtime(blinkCooldown);
         canBlink = true;
         

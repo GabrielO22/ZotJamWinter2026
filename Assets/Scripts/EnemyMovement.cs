@@ -12,7 +12,7 @@ public class EnemyMovement : MonoBehaviour
     private BlinkController blink;
     private Rigidbody2D rb;
     private Collider2D[] colliders;
-
+    private CardFlipAnimation cardFlip;
 
     [Header("Chase")]
     public float enemySpeed = 1f;
@@ -43,6 +43,7 @@ public class EnemyMovement : MonoBehaviour
         spriteChanger = GetComponent<SpriteChanger>();
         rb = GetComponent<Rigidbody2D>();
         colliders = GetComponents<Collider2D>();
+        cardFlip = GetComponent<CardFlipAnimation>();
 
         // Store initial position and orientation
         initialPosition = transform.position;
@@ -116,6 +117,15 @@ public class EnemyMovement : MonoBehaviour
 
         Vector2 toPlayer = (player.position - transform.position).normalized;
         desiredVelocity = toPlayer * enemySpeed;
+
+        // Determine which direction enemy should face based on player position
+        int targetDir = toPlayer.x >= 0 ? 1 : -1;
+
+        // Flip if direction changed
+        if (targetDir != dir)
+        {
+            TurnAround();
+        }
     }
 
     private void IdleMovement()
@@ -177,9 +187,16 @@ public class EnemyMovement : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
         }
 
-        // Reset direction and scale
+        // Reset direction - use InstantFlip if CardFlipAnimation exists
         dir = initialDir;
-        transform.localScale = initialScale;
+        if (cardFlip != null)
+        {
+            cardFlip.InstantFlip(initialDir);
+        }
+        else
+        {
+            transform.localScale = initialScale;
+        }
 
         // Reset velocity
         desiredVelocity = Vector2.zero;
@@ -189,10 +206,18 @@ public class EnemyMovement : MonoBehaviour
     {
         dir *= -1;
 
-        // Optional: flip sprite visually
-        Vector3 s = transform.localScale;
-        s.x = Mathf.Abs(s.x) * dir;
-        transform.localScale = s;
+        // Use CardFlipAnimation if available, otherwise fallback to instant flip
+        if (cardFlip != null)
+        {
+            cardFlip.FlipToDirection(dir);
+        }
+        else
+        {
+            // Fallback: flip sprite visually (instant)
+            Vector3 s = transform.localScale;
+            s.x = Mathf.Abs(s.x) * dir;
+            transform.localScale = s;
+        }
     }
 
     void OnDrawGizmosSelected()

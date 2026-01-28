@@ -14,6 +14,9 @@ public class EyeBlinkGauge : MonoBehaviour
     [Tooltip("The Image component for the eye sprite")]
     private Image eyeImage;
 
+    [Tooltip("The RectTransform component for proper UI positioning")]
+    private RectTransform rectTransform;
+
     [Header("Color Transition Settings")]
     [Tooltip("Color when gauge is full (safe)")]
     public Color fullColor = Color.white;
@@ -54,16 +57,22 @@ public class EyeBlinkGauge : MonoBehaviour
     public AnimationCurve shakeFrequencyCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
     // Internal state
-    private Vector3 originalPosition;
+    private Vector2 originalPosition;
     private float shakeTimer = 0f;
 
     void Awake()
     {
         eyeImage = GetComponent<Image>();
+        rectTransform = GetComponent<RectTransform>();
 
         if (eyeImage == null)
         {
             Debug.LogError("EyeBlinkGauge: No Image component found! Please attach this script to a UI Image.");
+        }
+
+        if (rectTransform == null)
+        {
+            Debug.LogError("EyeBlinkGauge: No RectTransform component found! UI elements must have RectTransform.");
         }
 
         // Initialize gradient if not set
@@ -84,8 +93,12 @@ public class EyeBlinkGauge : MonoBehaviour
 
     void Start()
     {
-        // Store the original position for shake calculations
-        originalPosition = transform.localPosition;
+        // Store the original anchored position for shake calculations
+        // Using anchoredPosition ensures proper UI positioning across different resolutions
+        if (rectTransform != null)
+        {
+            originalPosition = rectTransform.anchoredPosition;
+        }
 
         // Generate random noise offset if not set
         if (noiseOffset == 0f)
@@ -132,6 +145,8 @@ public class EyeBlinkGauge : MonoBehaviour
     /// </summary>
     private void UpdateShake(float dangerLevel)
     {
+        if (rectTransform == null) return;
+
         // Calculate shake intensity based on curve
         float intensityMultiplier = shakeIntensityCurve.Evaluate(dangerLevel);
         float currentIntensity = Mathf.Lerp(minShakeIntensity, maxShakeIntensity, intensityMultiplier);
@@ -143,33 +158,33 @@ public class EyeBlinkGauge : MonoBehaviour
         // If no shake needed, reset to original position
         if (currentIntensity <= 0.001f)
         {
-            transform.localPosition = originalPosition;
+            rectTransform.anchoredPosition = originalPosition;
             return;
         }
 
         // Update shake timer
         shakeTimer += Time.deltaTime * currentFrequency;
 
-        // Calculate shake offset
-        Vector3 shakeOffset;
+        // Calculate shake offset (2D for UI)
+        Vector2 shakeOffset;
 
         if (usePerlinNoise)
         {
             // Perlin noise for organic shake
             float xShake = (Mathf.PerlinNoise(shakeTimer + noiseOffset, 0f) - 0.5f) * 2f;
             float yShake = (Mathf.PerlinNoise(0f, shakeTimer + noiseOffset + 100f) - 0.5f) * 2f;
-            shakeOffset = new Vector3(xShake, yShake, 0f) * currentIntensity;
+            shakeOffset = new Vector2(xShake, yShake) * currentIntensity;
         }
         else
         {
             // Sine wave for predictable shake
             float xShake = Mathf.Sin(shakeTimer) * currentIntensity;
             float yShake = Mathf.Cos(shakeTimer * 1.3f) * currentIntensity; // Different frequency for Y
-            shakeOffset = new Vector3(xShake, yShake, 0f);
+            shakeOffset = new Vector2(xShake, yShake);
         }
 
-        // Apply shake
-        transform.localPosition = originalPosition + shakeOffset;
+        // Apply shake using anchoredPosition for proper UI behavior
+        rectTransform.anchoredPosition = originalPosition + shakeOffset;
     }
 
     /// <summary>
@@ -177,16 +192,31 @@ public class EyeBlinkGauge : MonoBehaviour
     /// </summary>
     public void ResetShake()
     {
-        transform.localPosition = originalPosition;
+        if (rectTransform != null)
+        {
+            rectTransform.anchoredPosition = originalPosition;
+        }
         shakeTimer = 0f;
     }
 
     /// <summary>
     /// Manually set the original position (useful if the UI element moves)
     /// </summary>
-    public void SetOriginalPosition(Vector3 position)
+    public void SetOriginalPosition(Vector2 position)
     {
         originalPosition = position;
+    }
+
+    /// <summary>
+    /// Update the original position to current anchored position
+    /// Useful if UI layout changes during gameplay
+    /// </summary>
+    public void UpdateOriginalPosition()
+    {
+        if (rectTransform != null)
+        {
+            originalPosition = rectTransform.anchoredPosition;
+        }
     }
 
     // Debug visualization in editor

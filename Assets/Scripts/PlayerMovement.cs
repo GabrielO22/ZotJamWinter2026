@@ -22,10 +22,12 @@ public class PlayerMovement : MonoBehaviour
 
     private BlinkController blink;
     private int dir = 1; // 1 = right, -1 = left
+    private CardFlipAnimation cardFlip;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        cardFlip = GetComponent<CardFlipAnimation>();
     }
 
     void FixedUpdate()
@@ -101,10 +103,18 @@ public class PlayerMovement : MonoBehaviour
     {
         dir *= -1;
 
-        // Flip sprite visually
-        Vector3 s = transform.localScale;
-        s.x = Mathf.Abs(s.x) * dir;
-        transform.localScale = s;
+        // Use CardFlipAnimation if available, otherwise fallback to instant flip
+        if (cardFlip != null)
+        {
+            cardFlip.FlipToDirection(dir);
+        }
+        else
+        {
+            // Fallback: Flip sprite visually (instant)
+            Vector3 s = transform.localScale;
+            s.x = Mathf.Abs(s.x) * dir;
+            transform.localScale = s;
+        }
     }
 
     void OnEnable()

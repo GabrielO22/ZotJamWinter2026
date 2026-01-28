@@ -16,6 +16,10 @@ public class BlinkController : MonoBehaviour
     public GameObject normalplatform;
     public GameObject evilplatform;
 
+    [Header("Enemy Reset Settings")]
+    [Tooltip("When enabled, enemies will reset to their starting position when exiting blink state. Prevents enemy swarming.")]
+    public bool resetEnemyPositionsOnExitBlink = false;
+
     public event Action enterBlink;
     public event Action exitBlink;
 

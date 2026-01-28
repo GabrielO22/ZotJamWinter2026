@@ -21,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     public bool onGround;
 
     private BlinkController blink;
+    private int dir = 1; // 1 = right, -1 = left
 
     void Awake()
     {
@@ -35,7 +36,17 @@ public class PlayerMovement : MonoBehaviour
         // 2) Horizontal movement
         rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
 
-        // 3) Jump (use queued input so it doesn't miss)
+        // 3) Handle sprite direction based on movement input
+        if (moveInput.x > 0 && dir != 1)
+        {
+            TurnAround();
+        }
+        else if (moveInput.x < 0 && dir != -1)
+        {
+            TurnAround();
+        }
+
+        // 4) Jump (use queued input so it doesn't miss)
         if (jumpQueued && onGround)
         {
             jumpQueued = false;
@@ -84,6 +95,16 @@ public class PlayerMovement : MonoBehaviour
     public void ResetCharacter()
     {
         transform.eulerAngles = Vector3.zero;
+    }
+
+    private void TurnAround()
+    {
+        dir *= -1;
+
+        // Flip sprite visually
+        Vector3 s = transform.localScale;
+        s.x = Mathf.Abs(s.x) * dir;
+        transform.localScale = s;
     }
 
     void OnEnable()

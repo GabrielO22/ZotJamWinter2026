@@ -33,11 +33,21 @@ public class EnemyMovement : MonoBehaviour
 
     private Vector2 desiredVelocity;
 
+    // Store initial position for reset functionality
+    private Vector3 initialPosition;
+    private int initialDir;
+    private Vector3 initialScale;
+
     void Awake()
     {
         spriteChanger = GetComponent<SpriteChanger>();
         rb = GetComponent<Rigidbody2D>();
         colliders = GetComponents<Collider2D>();
+
+        // Store initial position and orientation
+        initialPosition = transform.position;
+        initialDir = dir;
+        initialScale = transform.localScale;
 
         // If you have a Rigidbody2D, these reduce wobble a lot
         if (rb != null)
@@ -127,7 +137,7 @@ public class EnemyMovement : MonoBehaviour
 
          
 
-        // Turn around if at edge or hitting wall — but not every frame (prevents wobble/spin)
+        // Turn around if at edge or hitting wall ï¿½ but not every frame (prevents wobble/spin)
         if (Time.time >= nextTurnTime && (!groundAhead || wallAhead))
         {
             TurnAround();
@@ -148,6 +158,31 @@ public class EnemyMovement : MonoBehaviour
     {
         isChasing = false;
         SetGhostMode(false);
+
+        // Reset position if enabled in BlinkController
+        if (blink != null && blink.resetEnemyPositionsOnExitBlink)
+        {
+            ResetToInitialPosition();
+        }
+    }
+
+    private void ResetToInitialPosition()
+    {
+        // Reset position
+        transform.position = initialPosition;
+
+        // Reset velocity
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        // Reset direction and scale
+        dir = initialDir;
+        transform.localScale = initialScale;
+
+        // Reset velocity
+        desiredVelocity = Vector2.zero;
     }
 
     private void TurnAround()

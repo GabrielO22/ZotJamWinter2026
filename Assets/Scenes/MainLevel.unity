@@ -856,7 +856,7 @@ MonoBehaviour:
   edgeTriggerDistance: 1
   useViewportEdgeDetection: 1
   viewportEdgeThreshold: 0.1
-  panSpeed: 9
+  panSpeed: 10
   transitionType: 2
   enableHorizontalTransitions: 1
   enableVerticalTransitions: 1
@@ -3444,7 +3444,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1004471672
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3505,8 +3505,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   animateOnBlinkEnter: 1
-  blinkEnterFadeDuration: 0.15
-  blinkEnterFlashOpacity: 0.9
+  blinkEnterFadeDuration: 0.2
+  blinkEnterFlashOpacity: 1
   blinkEnterFadeSpeed: 5
   vignetteColor: {r: 0, g: 0, b: 0, a: 1}
   useColorGradient: 0

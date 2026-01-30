@@ -21,6 +21,13 @@ public class Respawn : MonoBehaviour
         {
             respawnPoint = other.transform.position;
             other.gameObject.SetActive(false);
+
+            // Notify CheckpointManager
+            if (CheckpointManager.Instance != null)
+            {
+                CheckpointManager.Instance.CheckpointReached();
+            }
+
             return;
         }
 
